@@ -1,11 +1,22 @@
 <html>
-<head>
-    <title>News Feed</title>
-</head>
-<body>
-<h1>News Proglib</h1>
-<b>{{title}}</b>
-<p>{{published}}</p>
-<p>{{summary}}</p>
-</body>
+	<head>
+		<title>News Feeds</title>
+	</head>
+	<body>
+		<h1>Current news</h1>
+		<form action="/">
+			<input type="text" placeholder="search feed" name="site"/>
+			<input type="submit" value="Submit"/>
+		</form>
+        {% for article in articles %}
+		<b>
+			<a href="{{article.link}}">{{article.title}}</a>
+		</b>
+		<br/>
+		<i>{{article.published}}</i>
+		<br/>
+		<p>{{article.summary}}</p>
+		<hr/>
+        {% endfor %}
+	</body>
 </html>
