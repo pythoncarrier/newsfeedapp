@@ -4,6 +4,14 @@
 	</head>
 	<body>
 		<h1>Current news</h1>
+		<form>
+			<input type="text" placeholder="search weather" name="city">
+			<input type="submit" value="Submit">
+		</form>
+		<h2>Weather</h2>
+			<p>City: <b>{{weather.city}}, {{weather.country}}</b></p>
+			<p>{{weather.description}} | {{weather.temperature}}&#8451;</p>
+		<h2>News</h2>
 		<form action="/">
 			<input type="text" placeholder="search feed" name="site"/>
 			<input type="submit" value="Submit"/>
