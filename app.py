@@ -13,10 +13,14 @@ RSS_FEEDS = {
 DEFAULTS = {
     'feed_type': 'proglib',
     'weather_city': 'Kiev',
+    'currency_from': 'USD',
+    'currency_to': 'UAH',
 }
 
 OWM_API_KEY = 'cc1b5c72e6f1a10bfbf3f0338255f73f'
+OER_API_KEY = '14ac45d12f0e4ff6926f037a73263206'
 WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid={}'
+CURRENCY_URL = 'https://openexchangerates.org//api/latest.json?app_id={}'
 
 
 @app.route('/')
@@ -26,7 +30,11 @@ def index():
 
     articles = get_news(feed_type)
     weather = get_weather(weather_city)
-    return render_template('index.html', articles=articles['entries'], weather=weather)
+    currency_from = DEFAULTS['currency_from']
+    currency_to = DEFAULTS['currency_to']
+    rate = get_currency(currency_from, currency_to)
+    return render_template('index.html', articles=articles['entries'], weather=weather, currency_from=currency_from,
+                           currency_to=currency_to, rate=rate)
 
 
 def get_news(query):
@@ -53,6 +61,15 @@ def get_weather(query):
             "country": data["sys"]["country"]
         }
     return weather
+
+
+def get_currency(frm, to):
+    url = CURRENCY_URL.format(OER_API_KEY)
+    all_currency = urlopen(url).read()
+    response = json.loads(all_currency).get('rates')
+    frm_rate = response.get(frm.upper())
+    to_rate = response.get(to.upper())
+    return to_rate / frm_rate
 
 
 if __name__ == "__main__":
