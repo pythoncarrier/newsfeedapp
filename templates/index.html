@@ -5,7 +5,7 @@
 	<body>
 		<h1>Current news</h1>
 		<form>
-			<input type="text" placeholder="search weather" name="city">
+			<input type="text" placeholder="search weather" name="weather_city">
 			<input type="submit" value="Submit">
 		</form>
 		<h2>Weather</h2>
@@ -15,7 +15,7 @@
 		<p> 1 {{currency_from}} = {{rate}} {{currency_to}} </p>
 		<h2>News</h2>
 		<form action="/">
-			<input type="text" placeholder="search feed" name="site"/>
+			<input type="text" placeholder="search feed" name="feed_type"/>
 			<input type="submit" value="Submit"/>
 		</form>
         {% for article in articles %}

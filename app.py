@@ -1,7 +1,10 @@
-import feedparser, json
-from flask import Flask, render_template, request
-from urllib.request import urlopen
+import datetime
+import json
 from urllib.parse import quote
+from urllib.request import urlopen
+
+import feedparser
+from flask import Flask, request, make_response
 
 app = Flask("__name__")
 
@@ -25,16 +28,22 @@ CURRENCY_URL = 'https://openexchangerates.org//api/latest.json?app_id={}'
 
 @app.route('/')
 def index():
-    feed_type = request.args.get("site")
-    weather_city = request.args.get("city")
-
+    feed_type = get_value("feed_type")
     articles = get_news(feed_type)
-    weather = get_weather(weather_city)
+
+    city = get_value("weather_city")
+    weather = get_weather(city)
+
     currency_from = DEFAULTS['currency_from']
     currency_to = DEFAULTS['currency_to']
     rate = get_currency(currency_from, currency_to)
-    return render_template('index.html', articles=articles['entries'], weather=weather, currency_from=currency_from,
-                           currency_to=currency_to, rate=rate)
+
+    response = make_response('index.html', articles=articles['entries'], weather=weather, currency_from=currency_from,
+                             currency_to=currency_to, rate=rate)
+    expires = datetime.datetime.now() + datetime.timedelta(days=7)
+    response.set_cookie("feed_type", feed_type, expires=expires)
+    response.set_cookie("weather_city", city, expires=expires)
+    return response
 
 
 def get_news(query):
@@ -70,6 +79,15 @@ def get_currency(frm, to):
     frm_rate = response.get(frm.upper())
     to_rate = response.get(to.upper())
     return to_rate / frm_rate
+
+
+def get_value(key):
+    if request.args.get(key):
+        return request.args.get(key)
+    elif request.cookie.get(key):
+        return request.cookie.get(key)
+    else:
+        return DEFAULTS[key]
 
 
 if __name__ == "__main__":
